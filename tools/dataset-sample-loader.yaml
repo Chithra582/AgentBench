@@ -1,0 +1,19 @@
+name: dataset-sample-loader
+description: Loads and validates benchmark problem instances from task split datasets.
+input_schema:
+  type: object
+  properties:
+    dataset_name:
+      type: string
+      description: Target benchmark dataset name.
+    split:
+      type: string
+      description: Dataset split (e.g., 'dev', 'test', 'train').
+      default: "test"
+    sample_indices:
+      type: array
+      items:
+        type: integer
+      description: Optional subset list of problem indices to evaluate.
+  required:
+    - dataset_name

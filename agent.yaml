@@ -1,0 +1,21 @@
+spec_version: "0.1.0"
+name: "agentbench"
+version: "0.3.0"
+description: "Multi-environment LLM-as-Agent benchmark and evaluation suite supporting function calling, interactive task sandboxes, and empirical scoring."
+author: "THUDM / AgentBench Contributors"
+license: "Apache-2.0"
+metadata:
+  domain: "Developer Tools / Multi-Environment LLM Agent Benchmarking & Function-Calling Evaluation"
+  category: "Developer Tools"
+  framework: "AgentBench / AgentRL / Docker / Python"
+  language: "Python"
+skills:
+  - "benchmark-suite-orchestration"
+  - "multiturn-evaluation-engine"
+  - "heterogeneous-environment-adapter"
+  - "trajectory-metrics-scoring"
+tools:
+  - "task-environment-launcher"
+  - "agent-interaction-evaluator"
+  - "benchmark-metric-collector"
+  - "dataset-sample-loader"

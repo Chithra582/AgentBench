@@ -1,0 +1,22 @@
+name: agent-interaction-evaluator
+description: Dispatches multi-turn interaction requests to a candidate agent and returns environment execution feedback.
+input_schema:
+  type: object
+  properties:
+    task_id:
+      type: string
+      description: Unique identifier of the benchmark problem instance.
+    agent_endpoint:
+      type: string
+      description: URL or API identifier for candidate agent model inference.
+    max_turns:
+      type: integer
+      description: Maximum allowable interaction turns before termination.
+      default: 30
+    temperature:
+      type: number
+      description: Model sampling temperature for deterministic evaluation.
+      default: 0.0
+  required:
+    - task_id
+    - agent_endpoint
