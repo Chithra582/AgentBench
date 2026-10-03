@@ -82,7 +82,6 @@ AgentBench enforces strict operational boundaries and deterministic refusal thre
 Continuous operational stability is maintained through layered fault recovery:
 - **Tier 1 (Automated Retry)**: Transient network disconnections to LLM inference endpoints undergo 3 exponential backoff attempts (1s, 2s, 4s).
 - **Tier 2 (Environment Reset)**: If an environment worker crashes or encounters an unrecoverable state, the worker container is killed and restarted from its pristine base snapshot.
-- 
 - **Model Fallback Cascade**: High-level reasoning and synthesis default to `gemini-2.0-flash` with automatic failover to `gpt-4o` and `claude-3-5-sonnet`.
 
 ### 5. Human-in-the-Loop Governance
