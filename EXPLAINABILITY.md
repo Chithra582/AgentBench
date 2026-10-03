@@ -1,8 +1,8 @@
 # EXPLAINABILITY.md
 
-This document explains the internal mechanisms, data lineage, operational boundaries, and governance framework of **# Explainability & Decision Transparency Report** (`agentbench`) in accordance with the **OpenGAP v0.1.0** specification for the **HiDevs GitAgent Passport** clearance pipeline.
+This document explains the internal mechanisms, data lineage, operational boundaries, and governance framework of **AgentBench** (`agentbench`) in accordance with the **OpenGAP v0.1.0** specification for the **HiDevs GitAgent Passport** clearance pipeline.
 
-> **Agent Name:** # Explainability & Decision Transparency Report (`agentbench`)  
+> **Agent Name:** AgentBench (`agentbench`)  
 > **Specification:** OpenGAP v0.1.0  
 > **Category / Domain:** Developer Tools / Multi-Environment LLM Agent Benchmarking & Function-Calling Evaluation  
 > **Compliance Standard:** OpenGAP Checkpoint 2 (Explainability & Decision Governance), OWASP LLM Top 10, MITRE ATLAS  
@@ -11,7 +11,7 @@ This document explains the internal mechanisms, data lineage, operational bounda
 
 ## How the Agent Decides
 
-# Explainability & Decision Transparency Report operates via a deterministic five-stage operational pipeline.
+The agent operates via a strictly deterministic, 5-stage execution pipeline designed to evaluate model outputs across heterogeneous interactive sandbox environments.
 
 ### 1. Decision Architecture
 
@@ -52,42 +52,50 @@ The runtime intake, state classification, evaluation, and execution tracking ope
 
 ### 2. Decision Logic & Routing Formulations
 
-& Evaluation Gate]                                   |
-|     --> Compare final environment state against ground-truth assertion predicates  |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 5: Trajectory Telemetry & Report Export]                                  |
-|     --> Aggregate success rates, compute efficiency metrics, and output JSONL logs |
-+-----------------------------------------------------------------------------------+
-```
+Task selection and trajectory evaluation rely on a standardized affinity and scoring formulation:
+
+$$S_{\text{eval}}(t) = \alpha \cdot \mathbb{I}(\text{State}_t = \text{Goal}) + \beta \cdot \left(1 - \frac{\text{Steps}_t}{\text{MaxSteps}}\right) - \gamma \cdot \text{Penalty}_{\text{error}}$$
+
+Where:
+- $\alpha = 0.70$: Primary objective completion weight.
+- $\beta = 0.20$: Trajectory efficiency and step economy coefficient.
+- $\gamma = 0.10$: Syntactic or runtime execution error penalty.
+- $\mathbb{I}(\cdot)$: Binary indicator function verifying exact state assertions.
+
+Environment routing affinity across available task workers is calculated as:
+
+$$A(e, k) = \frac{\exp(\mathbf{w}_e \cdot \mathbf{x}_k)}{\sum_{j=1}^{M} \exp(\mathbf{w}_j \cdot \mathbf{x}_k)}$$
+
+Where $\mathbf{x}_k$ represents the embedding vector of task scenario $k$ and $\mathbf{w}_e$ denotes the capability weights of containerized worker $e$.
 
 ### 3. Thresholding & Refusal Decision Criteria
 
-# Explainability & Decision Transparency Report enforces strict operational boundaries and deterministic refusal thresholds:
-- **Refusal on ERR_TURN_LIMIT_EXCEEDED**: **Max Turn Budget ($T_{\text{max}}$)** halts execution with code `ERR_TURN_LIMIT_EXCEEDED`.
-- **Refusal on ERR_STEP_TIMEOUT**: **Per-Step Execution Timeout** halts execution with code `ERR_STEP_TIMEOUT`.
-- **Refusal on ERR_SANDBOX_ESCAPE_VIOLATION**: **Host System Access Attempt** halts execution with code `ERR_SANDBOX_ESCAPE_VIOLATION`.
-- **Refusal on ERR_INVALID_TOOL_PAYLOAD**: **Malformed Tool Argument Schema** halts execution with code `ERR_INVALID_TOOL_PAYLOAD`.
-- **Refusal on ERR_UNSAFE_OPERATION_BLOCKED**: **Database Destruction Safeguard** halts execution with code `ERR_UNSAFE_OPERATION_BLOCKED`.
+AgentBench enforces strict operational boundaries and deterministic refusal thresholds:
+- **Refusal on ERR_TURN_LIMIT_EXCEEDED**: Max Turn Budget ($T_{\text{max}}$) ($\ge 30$ turns) halts execution with code `ERR_TURN_LIMIT_EXCEEDED`.
+- **Refusal on ERR_STEP_TIMEOUT**: Per-Step Execution Timeout ($> 120$ seconds) halts execution with code `ERR_STEP_TIMEOUT`.
+- **Refusal on ERR_SANDBOX_ESCAPE_VIOLATION**: Host System Access Attempt (Regex match on host mount) halts execution with code `ERR_SANDBOX_ESCAPE_VIOLATION`.
+- **Refusal on ERR_INVALID_TOOL_PAYLOAD**: Malformed Tool Argument Schema (Schema mismatch) halts execution with code `ERR_INVALID_TOOL_PAYLOAD`.
+- **Refusal on ERR_UNSAFE_OPERATION_BLOCKED**: Database Destruction Safeguard (`DROP DATABASE`, `SHUTDOWN`) halts execution with code `ERR_UNSAFE_OPERATION_BLOCKED`.
 
 ### 4. Fallback Decision Mechanism
 
 Continuous operational stability is maintained through layered fault recovery:
+- **Tier 1 (Automated Retry)**: Transient network disconnections to LLM inference endpoints undergo 3 exponential backoff attempts (1s, 2s, 4s).
+- **Tier 2 (Environment Reset)**: If an environment worker crashes or encounters an unrecoverable state, the worker container is killed and restarted from its pristine base snapshot.
+- 
 - **Model Fallback Cascade**: High-level reasoning and synthesis default to `gemini-2.0-flash` with automatic failover to `gpt-4o` and `claude-3-5-sonnet`.
 
 ### 5. Human-in-the-Loop Governance
 
 Human operators retain sovereign authority over the multi-agent execution lifecycle:
-- **Consequential Action Sign-Off**: Sensitive and consequential actions require operator sign-off.
-- **Offline Ledger Auditing**: Operators can verify execution records and state transitions offline.
+- **Tier 3 (HumanintheLoop Interruption)**: In ambiguous benchmark discrepancies or potential container security alerts, execution halts and alerts are dispatched to the administrative console.
+- **Benchmark Trajectory Auditing**: Operators inspect evaluation traces, raw generation tokens, and container logs to verify scoring fidelity.
 
 ---
 
 ## The Data It Uses
 
-# Explainability & Decision Transparency Report operates under strict principles of data minimization, environment isolation, and privacy protection.
+AgentBench operates under strict principles of data minimization, environment isolation, and privacy protection.
 
 ### 1. Ingested Input Data
 
@@ -117,7 +125,7 @@ The framework processes only operational data necessary to perform its functions
 
 ## Limitations
 
-Understanding the operational boundaries and technical constraints of # Explainability & Decision Transparency Report is essential for effective deployment.
+Understanding the operational boundaries and technical constraints of AgentBench is essential for effective deployment.
 
 ### 1. High Memory Overhead in WebShop & ALFWorld Workers
 - **Limitation**: Running concurrent WebShop and ALFWorld workers requires in excess of 16GB of system RAM, risking out-of-memory container crashes on constrained workstations.
